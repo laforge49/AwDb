@@ -15,7 +15,7 @@ Objects are also the nodes in a graph, with links connecting them.
 These links have labels and there are indexes for accessing
 the origin and destination nodes for a given label.
 
-Every transaction creates a journal entry, which are also objects in the database.
+Every transaction creates a journal entry, which is also an object in the database.
 Journal entries are connected to the objects, secondary keys and links they updated.
 And it is a simple matter to view a journal for each of these
 by displaying the journal entries which modified them.
