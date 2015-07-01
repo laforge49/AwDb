@@ -12,6 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jactor2.version>1.0.0</jactor2.version>
         <slf4j.version>1.7.7</slf4j.version>
         <junit.version>4.11</junit.version>
         <guava.version>18.0</guava.version>
@@ -27,11 +28,6 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jettyVersion}</version>
             </plugin>
         </plugins>
     </build>
