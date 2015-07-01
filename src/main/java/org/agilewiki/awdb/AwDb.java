@@ -3,6 +3,7 @@ package org.agilewiki.awdb;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.agilewiki.awdb.db.virtualcow.Display;
 import org.agilewiki.awdb.nodes.Key_NodeFactory;
 import org.agilewiki.awdb.nodes.Metadata_NodeFactory;
 import org.agilewiki.jactor2.core.blades.BladeBase;
@@ -30,7 +31,7 @@ import java.util.*;
 /**
  * Object Oriented Database, without state caching.
  */
-public class AwDb {
+public class AwDb implements AutoCloseable {
     private static AwDb awDb = null;
     public final static RandomId randomId = new RandomId();
     private final Db db;
@@ -48,11 +49,10 @@ public class AwDb {
         return awDb;
     }
 
-    public AwDb(int maxRootBlockSize, long maxNodeCacheSize)
+    public AwDb(Path dbPath, int maxRootBlockSize, long maxNodeCacheSize)
             throws Exception {
         awDb = this;
         dbUpdater = new DbUpdater();
-        Path dbPath = Paths.get("vcow.db");
         db = new Db(new BaseRegistry(), dbPath, maxRootBlockSize);
         if (Files.exists(dbPath))
             db.open();
@@ -97,6 +97,10 @@ public class AwDb {
 
     public void registerTransaction(String transactionName, Class transactionClass) {
         db.registerTransaction(transactionName, transactionClass);
+    }
+
+    public void displayAll(long timestamp) {
+        Display.all(db, timestamp);
     }
 
     public NodeData newNodeData(String nodeId, long timestamp) {
