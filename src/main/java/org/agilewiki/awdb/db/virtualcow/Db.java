@@ -14,6 +14,7 @@ import org.agilewiki.awdb.db.immutable.collections.*;
 import org.agilewiki.awdb.db.immutable.scalars.CS256;
 import org.agilewiki.awdb.db.immutable.scalars.CS256Factory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -42,6 +43,8 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     private DiskSpaceManager dsm;
     private long timestamp;
     private String jeName;
+    private Path journalDirectoryPath = null;
+    private File journalDirectoryFile = null;
 
     /**
      * Create a Db actor.
@@ -57,6 +60,23 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
         this.dbPath = dbPath;
         this.maxBlockSize = maxBlockSize;
         timestamp = Timestamp.generate();
+    }
+
+    public void setJournalDirectoryPath(Path journalDirectoryPath) {
+        this.journalDirectoryPath = journalDirectoryPath;
+        journalDirectoryFile = journalDirectoryPath.toFile();
+        if (!journalDirectoryFile.exists()) {
+            if (!journalDirectoryFile.mkdir())
+                throw new IllegalStateException("journal directory not created: " + journalDirectoryFile);
+        }
+    }
+
+    public void clearJournalDirectory() throws IOException {
+        File[] journalFiles = journalDirectoryFile.listFiles();
+        for (File journalFile : journalFiles) {
+            Path journalPath = journalFile.toPath();
+            Files.delete(journalPath);
+        }
     }
 
     /**

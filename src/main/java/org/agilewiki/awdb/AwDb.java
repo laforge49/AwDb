@@ -49,11 +49,15 @@ public class AwDb implements AutoCloseable {
         return awDb;
     }
 
-    public AwDb(Path dbPath, int maxRootBlockSize, long maxNodeCacheSize)
+    public AwDb(Path dbPath, int maxRootBlockSize, long maxNodeCacheSize,
+                Path journalDirectoryPath, boolean clearJournals)
             throws Exception {
         awDb = this;
         dbUpdater = new DbUpdater();
         db = new Db(new BaseRegistry(), dbPath, maxRootBlockSize);
+        db.setJournalDirectoryPath(journalDirectoryPath);
+        if (clearJournals)
+            db.clearJournalDirectory();
         if (Files.exists(dbPath))
             db.open();
         else
