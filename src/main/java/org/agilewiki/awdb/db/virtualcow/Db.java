@@ -124,6 +124,8 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     }
 
     private void processJournalFiles() {
+        if (journalDirectoryFile == null)
+            return;
         File[] journalFiles = journalDirectoryFile.listFiles();
         Arrays.sort(journalFiles);
         for (File journalFile : journalFiles) {
