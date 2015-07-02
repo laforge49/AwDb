@@ -220,8 +220,8 @@ public class VersionedListNodeData implements Releasable {
      * Get the index of an existing value with the same identity (==).
      * (The list is searched in order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     public int getIndex(Object value, long timestamp) {
@@ -242,8 +242,8 @@ public class VersionedListNodeData implements Releasable {
      * Get the index of an existing value with the same identity (==).
      * (The list is searched in reverse order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     public int getIndexRight(Object value, long timestamp) {
@@ -264,8 +264,8 @@ public class VersionedListNodeData implements Releasable {
      * Find the index of an equal existing value.
      * (The list is searched in order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     public int findIndex(Object value, long timestamp) {
@@ -286,8 +286,8 @@ public class VersionedListNodeData implements Releasable {
      * Find the index of an equal existing value.
      * (The list is searched in reverse order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     public int findIndexRight(Object value, long timestamp) {
@@ -307,7 +307,7 @@ public class VersionedListNodeData implements Releasable {
     /**
      * Returns the index of an existing value higher than the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is higher, or -1.
      */
@@ -331,7 +331,7 @@ public class VersionedListNodeData implements Releasable {
     /**
      * Returns the index of an existing value higher than or equal to the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is higher or equal, or -1.
      */
@@ -356,7 +356,7 @@ public class VersionedListNodeData implements Releasable {
     /**
      * Returns the index of an existing value lower than the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is lower, or -1.
      */
@@ -379,7 +379,7 @@ public class VersionedListNodeData implements Releasable {
     /**
      * Returns the index of an existing value lower than or equal to the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is lower or equal, or -1.
      */
@@ -414,7 +414,7 @@ public class VersionedListNodeData implements Releasable {
     /**
      * Appends existing values to the list.
      *
-     * @param list The list being build.
+     * @param list      The list being build.
      * @param timestamp The time of the query.
      */
     public void flatList(List list, long timestamp) {
@@ -497,7 +497,7 @@ public class VersionedListNodeData implements Releasable {
     /**
      * Mark a value as deleted.
      *
-     * @param ndx  The index of the value.
+     * @param ndx The index of the value.
      * @return The revised node.
      */
     public VersionedListNode remove(int ndx) {
@@ -528,7 +528,7 @@ public class VersionedListNodeData implements Releasable {
      * Copy everything except what was deleted before a given time.
      * (This is a shallow copy, as the values in the list are not copied.)
      *
-     * @param n    The new list.
+     * @param n         The new list.
      * @param timestamp The given time.
      * @return A shortened copy of the list without some historical values.
      */

@@ -13,7 +13,7 @@ public class ValueId {
     /**
      * Generate an id by prefixing a string value with $v.
      *
-     * @param value    A string.
+     * @param value A string.
      * @return The string $v + value.
      */
     public static String generate(String value) {
@@ -23,27 +23,27 @@ public class ValueId {
     /**
      * Validate a valueId.
      *
-     * @param valueId    The valueId.
+     * @param valueId The valueId.
      */
     public static void validateAnId(String valueId) {
         if (!valueId.startsWith("$"))
-            throw new IllegalArgumentException("not a valid Id: "+valueId);
+            throw new IllegalArgumentException("not a valid Id: " + valueId);
     }
 
     /**
      * Validate a valueId.
      *
-     * @param valueId    The valueId.
+     * @param valueId The valueId.
      */
     public static void validateId(String valueId) {
         if (!valueId.startsWith("$v"))
-            throw new IllegalArgumentException("not a valid valueId: "+valueId);
+            throw new IllegalArgumentException("not a valid valueId: " + valueId);
     }
 
     /**
      * Returns the value of a valueId.
      *
-     * @param valueId    The valueId.
+     * @param valueId The valueId.
      * @return The value.
      */
     public static String value(String valueId) {

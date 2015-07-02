@@ -23,7 +23,7 @@ public class Journal {
     /**
      * Returns a composite id used to connect a journal entry to the VMN it modifies.
      *
-     * @param timestampId    The id of the journal entry.
+     * @param timestampId The id of the journal entry.
      * @return A composite of 2 ids.
      */
     public static String modifiesId(String timestampId) {
@@ -33,7 +33,8 @@ public class Journal {
 
     /**
      * Returns a composite id used to connect a VMN to the journal entry which modified it.
-     * @param id    The id of the VMN.
+     *
+     * @param id The id of the VMN.
      * @return A composite of 2 ids.
      */
     public static String journalId(String id) {
@@ -45,8 +46,8 @@ public class Journal {
      * Iterates over the ids of the Versioned Map Nodes (VMNs) modified by the
      * given journal entry.
      *
-     * @param db             The database.
-     * @param timestampId    The timestampId of the journal entry.
+     * @param db            The database.
+     * @param timestampId   The timestampId of the journal entry.
      * @param longTimestamp The time of the query.
      * @return The iterable.
      */
@@ -58,8 +59,8 @@ public class Journal {
      * Iterates over the timestamps of the journal entries which modified a given
      * Virtual Map Node (VMN).
      *
-     * @param db    The database.
-     * @param id    The id of the VMN.
+     * @param db            The database.
+     * @param id            The id of the VMN.
      * @param longTimestamp The time of the query.
      * @return The iterable.
      */

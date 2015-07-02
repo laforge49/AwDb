@@ -118,7 +118,7 @@ public class Link2Id {
     public static PeekABoo<String> link2LabelIdIterable(Db db, String vmnId) {
         MapAccessor ma = db.mapAccessor();
         PeekABoo<ListAccessor> lait = ma.iterator(LINK2_ID + vmnId);
-        return new PeekABooMap<ListAccessor, String >(lait) {
+        return new PeekABooMap<ListAccessor, String>(lait) {
             @Override
             protected String transform(ListAccessor value) {
                 return link2IdLabel((String) value.key());

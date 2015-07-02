@@ -103,7 +103,7 @@ public interface MapAccessor extends PeekABooable<ListAccessor> {
      * Returns an iterator over the list accessors
      * with keys whose toString start with the given prefix.
      *
-     * @param prefix    The qualifying prefix.
+     * @param prefix The qualifying prefix.
      * @return The iterator.
      */
     PeekABoo<ListAccessor> iterator(final String prefix);
@@ -112,7 +112,7 @@ public interface MapAccessor extends PeekABooable<ListAccessor> {
      * Returns an iterable over the list accessors
      * with keys whose toString start with the given prefix.
      *
-     * @param prefix    The qualifying prefix.
+     * @param prefix The qualifying prefix.
      * @return The iterator.
      */
     PeekABoo<ListAccessor> iterable(final String prefix);

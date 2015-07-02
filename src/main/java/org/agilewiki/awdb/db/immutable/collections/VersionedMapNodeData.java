@@ -196,8 +196,8 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Mark a value as deleted.
      *
-     * @param key  The key of the list.
-     * @param ndx  The index of the value.
+     * @param key The key of the list.
+     * @param ndx The index of the value.
      * @return The revised node.
      */
     public VersionedMapNode remove(Comparable key, int ndx) {
@@ -227,8 +227,8 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Mark the first occurance of a value as deleted.
      *
-     * @param key  The key of the list.
-     * @param x  The object to be removed.
+     * @param key The key of the list.
+     * @param x   The object to be removed.
      * @return The revised node.
      */
     public VersionedMapNode remove(Comparable key, Object x) {
@@ -258,7 +258,7 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Empty the list by marking all the existing values as deleted.
      *
-     * @param key  The key of the list.
+     * @param key The key of the list.
      * @return The revised node.
      */
     public VersionedMapNode clearList(Comparable key) {
@@ -325,7 +325,7 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Builds a set of all keys with non-empty lists for the given time.
      *
-     * @param keys The set being built.
+     * @param keys      The set being built.
      * @param timestamp The time of the query.
      */
     public void flatKeys(NavigableSet<Comparable> keys, long timestamp) {
@@ -340,7 +340,7 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Builds a map of all the keys and values present at the given time.
      *
-     * @param map  The map being built.
+     * @param map       The map being built.
      * @param timestamp The time of the query.
      */
     public void flatMap(NavigableMap<Comparable, List> map, long timestamp) {
@@ -356,7 +356,7 @@ public class VersionedMapNodeData implements Releasable {
      * Copy everything except what was deleted before a given time.
      * (This is a shallow copy, as the values in the lists are not copied.)
      *
-     * @param n    The map being built.
+     * @param n         The map being built.
      * @param timestamp The time of the query.
      * @return The revised copy root.
      */
@@ -462,7 +462,7 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Returns the next greater key.
      *
-     * @param key  The given key.
+     * @param key       The given key.
      * @param timestamp The time of the query.
      * @return The next greater key with content at the time of the query, or null.
      */
@@ -483,7 +483,7 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Returns the key with content that is greater than or equal to the given key.
      *
-     * @param key  The given key.
+     * @param key       The given key.
      * @param timestamp The time of the query.
      * @return The key greater than or equal to the given key, or null.
      */
@@ -504,7 +504,7 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Returns the next smaller key.
      *
-     * @param key  The given key.
+     * @param key       The given key.
      * @param timestamp The time of the query.
      * @return The next smaller key with content at the time of the query, or null.
      */
@@ -525,7 +525,7 @@ public class VersionedMapNodeData implements Releasable {
     /**
      * Returns the key with content that is smaller than or equal to the given key.
      *
-     * @param key  The given key.
+     * @param key       The given key.
      * @param timestamp The time of the query.
      * @return The key smaller than or equal to the given key, or null.
      */

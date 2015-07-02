@@ -21,12 +21,13 @@ public interface Releasable {
     /**
      * release the local resources.
      */
-    default void releaseLocal() {}
+    default void releaseLocal() {
+    }
 
     /**
      * Resize immutables which are too large.
      *
-     * @param maxSize    Max size allowed for durable length.
+     * @param maxSize      Max size allowed for durable length.
      * @param maxBlockSize Maximum block size.
      * @return The revised structure.
      */

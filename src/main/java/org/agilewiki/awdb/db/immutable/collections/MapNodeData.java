@@ -316,7 +316,7 @@ public class MapNodeData implements Releasable {
      * Delete the first occurance of a value from the list.
      *
      * @param key The key of the list.
-     * @param x The value to remove.
+     * @param x   The value to remove.
      * @return The revised node.
      */
     public MapNode remove(Comparable key, Object x) {

@@ -11,7 +11,7 @@ public class Display {
     public static void all(Db db, long timestamp) {
         System.out.println("\n\n--Database Dump--");
         MapAccessor mapAccessor = db.mapAccessor();
-        for (ListAccessor la: mapAccessor) {
+        for (ListAccessor la : mapAccessor) {
             VersionedMapNode vmn = (VersionedMapNode) la.get(0);
             if (!vmn.isEmpty(timestamp))
                 vmn(vmn.mapAccessor(timestamp), (String) la.key());
@@ -20,7 +20,7 @@ public class Display {
 
     public static void vmn(MapAccessor ma, String id) {
         System.out.println("\nvmn id: " + id);
-        for (ListAccessor la: ma) {
+        for (ListAccessor la : ma) {
             vln(la);
         }
     }

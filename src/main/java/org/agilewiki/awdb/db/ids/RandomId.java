@@ -19,6 +19,6 @@ public class RandomId {
      * @return A secure random identifier that starts with $r.
      */
     public synchronized String generate() {
-        return PREFIX+generate64() + generate64();
+        return PREFIX + generate64() + generate64();
     }
 }

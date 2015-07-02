@@ -20,7 +20,7 @@ public class BlockReferenceFactory extends BaseFactory {
     /**
      * Create and register the factory.
      *
-     * @param registry        The registry where the factory is registered.
+     * @param registry The registry where the factory is registered.
      */
     public BlockReferenceFactory(DbFactoryRegistry registry) {
         this(registry, registry.blockReferenceFactoryId);
@@ -29,8 +29,8 @@ public class BlockReferenceFactory extends BaseFactory {
     /**
      * Create and register the factory.
      *
-     * @param registry        The registry where the factory is registered.
-     * @param id              The char used to identify the factory.
+     * @param registry The registry where the factory is registered.
+     * @param id       The char used to identify the factory.
      */
     protected BlockReferenceFactory(DbFactoryRegistry registry, char id) {
         super(registry, id);

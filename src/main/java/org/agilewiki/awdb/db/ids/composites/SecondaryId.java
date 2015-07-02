@@ -214,11 +214,11 @@ public class SecondaryId {
     /**
      * Returns true iff the vmn has the given secondary id.
      *
-     * @param db          The database.
-     * @param vmlId       The id of the vml.
-     * @param typeId      The id of the key.
-     * @param valueId     The value of the key.
-     * @param timestamp   The time of the query.
+     * @param db        The database.
+     * @param vmlId     The id of the vml.
+     * @param typeId    The id of the key.
+     * @param valueId   The value of the key.
+     * @param timestamp The time of the query.
      * @return True if the secondary key is present.
      */
     public static boolean hasSecondaryId(Db db, String vmlId, String typeId, String valueId, long timestamp) {

@@ -95,7 +95,7 @@ public interface ImmutableFactory {
     /**
      * Returns a ByteBuffer loaded with the serialized contents of the immutable.
      *
-     * @param immutable    The immutable to be serialized.
+     * @param immutable The immutable to be serialized.
      * @return The loaded ByteBuffer.
      */
     default ByteBuffer toByteBuffer(Object immutable) {

@@ -70,7 +70,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Returns a value if it is in range and the value exists for the given time.
      *
-     * @param ndx  The index of the selected value.
+     * @param ndx       The index of the selected value.
      * @param timestamp The time of the query.
      * @return A value, or null.
      */
@@ -85,8 +85,8 @@ public interface VersionedListNode extends Releasable {
      * Get the index of an existing value with the same identity (==).
      * (The list is searched in order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     default int getIndex(Object value, long timestamp) {
@@ -99,8 +99,8 @@ public interface VersionedListNode extends Releasable {
      * Get the index of an existing value with the same identity (==).
      * (The list is searched in reverse order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     default int getIndexRight(Object value, long timestamp) {
@@ -113,8 +113,8 @@ public interface VersionedListNode extends Releasable {
      * Find the index of an equal existing value.
      * (The list is searched in order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     default int findIndex(Object value, long timestamp) {
@@ -127,8 +127,8 @@ public interface VersionedListNode extends Releasable {
      * Find the index of an equal existing value.
      * (The list is searched in reverse order.)
      *
-     * @param value The value sought.
-     * @param timestamp  The time of the query.
+     * @param value     The value sought.
+     * @param timestamp The time of the query.
      * @return The index, or -1.
      */
     default int findIndexRight(Object value, long timestamp) {
@@ -140,7 +140,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Returns the index of an existing value higher than the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is higher, or -1.
      */
@@ -151,7 +151,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Returns the index of an existing value higher than or equal to the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is higher or equal, or -1.
      */
@@ -172,7 +172,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Returns the index of an existing value lower than the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is lower, or -1.
      */
@@ -185,7 +185,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Returns the index of an existing value lower than or equal to the given index.
      *
-     * @param ndx  A given index.
+     * @param ndx       A given index.
      * @param timestamp The time of the query.
      * @return An index of an existing value that is lower or equal, or -1.
      */
@@ -305,7 +305,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Returns a list accessor for the given time.
      *
-     * @param key  The key for the list.
+     * @param key       The key for the list.
      * @param timestamp The time of the query.
      * @return A list accessor for the given time.
      */
@@ -438,7 +438,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Mark a value as deleted.
      *
-     * @param ndx  The index of the value.
+     * @param ndx The index of the value.
      * @return The revised node.
      */
     default VersionedListNode remove(int ndx) {
@@ -450,7 +450,7 @@ public interface VersionedListNode extends Releasable {
     /**
      * Mark the first occurance of a value in a list as deleted.
      *
-     * @param x    The value to be removed.
+     * @param x The value to be removed.
      * @return The updated root.
      */
     default VersionedListNode remove(Object x) {

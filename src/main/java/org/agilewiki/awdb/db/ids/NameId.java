@@ -17,8 +17,8 @@ public class NameId {
     /**
      * Generate an id by prefixing a name with $n.
      *
-     * @param name    A string that does not contain a space, ! , quote, #, $
-     *                or lessor character.
+     * @param name A string that does not contain a space, ! , quote, #, $
+     *             or lessor character.
      * @return The string $n + name.
      */
     public static String generate(String name) {
@@ -29,10 +29,10 @@ public class NameId {
     /**
      * Validate a name.
      *
-     * @param name    The name to be validated.
+     * @param name The name to be validated.
      */
     public static void validate(String name) {
-        for (char c: name.toCharArray()) {
+        for (char c : name.toCharArray()) {
             if (c <= '$')
                 throw new IllegalArgumentException("may not contain char <= $");
         }
@@ -41,7 +41,7 @@ public class NameId {
     /**
      * Validate an id.
      *
-     * @param id    The id to be validated.
+     * @param id The id to be validated.
      */
     public static void validateAnId(String id) {
         if (!id.startsWith("$") || id.length() < 2)
@@ -52,7 +52,7 @@ public class NameId {
     /**
      * Validate a name id.
      *
-     * @param nameId    The name id to be validated.
+     * @param nameId The name id to be validated.
      */
     public static void validateId(String nameId) {
         if (!nameId.startsWith("$n"))

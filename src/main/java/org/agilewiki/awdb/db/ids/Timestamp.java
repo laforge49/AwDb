@@ -24,7 +24,7 @@ public class Timestamp {
     /**
      * Extracts the time from a timestamp.
      *
-     * @param timestamp    The timestamp.
+     * @param timestamp The timestamp.
      * @return The time in milliseconds.
      */
     public static long time(long timestamp) {
@@ -34,7 +34,7 @@ public class Timestamp {
     /**
      * Converts a timestampId to a timestamp in long form.
      *
-     * @param timestampId    A timestamp prefixed by $t.
+     * @param timestampId A timestamp prefixed by $t.
      * @return The equivalent timestamp as a long.
      */
     public static long timestamp(String timestampId) {
@@ -45,7 +45,8 @@ public class Timestamp {
 
     /**
      * Extracts the time from a timestampId.
-     * @param timestampId    A timestamp prefixed by $t.
+     *
+     * @param timestampId A timestamp prefixed by $t.
      * @return The time in milliseconds.
      */
     public static long time(String timestampId) {

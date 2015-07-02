@@ -9,8 +9,8 @@ public interface Transaction {
     /**
      * Transforms a map list.
      *
-     * @param db        The database to be updated.
-     * @param tMapNode  The durable content of the transaction.
+     * @param db       The database to be updated.
+     * @param tMapNode The durable content of the transaction.
      */
     void transform(Db db, MapNode tMapNode);
 
