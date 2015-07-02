@@ -26,7 +26,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -54,6 +53,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     private File journalDirectoryFile = null;
     private Path journalFilePath = null;
     private FileChannel jc;
+    private boolean newDatabase = false;
 
     /**
      * Create a Db actor.
@@ -90,9 +90,11 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
         }
     }
 
-    private void openJournalFile() {
+    public void openJournalFile() {
         if (journalDirectoryPath == null)
             return;
+        if (newDatabase)
+            processJournalFiles();
         long time = System.currentTimeMillis();
         Date date = new Date(time);
         DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss.SSS");
@@ -108,18 +110,21 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     }
 
     private void writeJournalEntry(ByteBuffer tByteBuffer) throws IOException {
-        if (jc != null) {
-            ByteBuffer jh = ByteBuffer.allocate(12);
-            jh.putLong(timestamp);
-            jh.putInt(tByteBuffer.position());
-            jh.flip();
-            while (jh.hasRemaining()) {
-                jc.write(jh);
-            }
-            tByteBuffer.rewind();
-            while (tByteBuffer.hasRemaining()) {
-                jc.write(tByteBuffer);
-            }
+        if (journalDirectoryPath == null) {
+            return;
+        }
+        if (jc == null)
+            throw new IllegalStateException("Journal file not opened.");
+        ByteBuffer jh = ByteBuffer.allocate(12);
+        jh.putLong(timestamp);
+        jh.putInt(tByteBuffer.position());
+        jh.flip();
+        while (jh.hasRemaining()) {
+            jc.write(jh);
+        }
+        tByteBuffer.rewind();
+        while (tByteBuffer.hasRemaining()) {
+            jc.write(tByteBuffer);
         }
     }
 
@@ -135,14 +140,14 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
 
     private void processJournalFile(Path journalFile) {
         System.out.println("processing " + journalFile);
-            FileChannel journalChannel;
-            try {
-                journalChannel = FileChannel.open(journalFile, READ);
-            } catch (IOException e) {
-                close();
-                getReactor().error("unable to open old journal file: " + journalFile, e);
-                throw new BlockIOException(e);
-            }
+        FileChannel journalChannel;
+        try {
+            journalChannel = FileChannel.open(journalFile, READ);
+        } catch (IOException e) {
+            close();
+            getReactor().error("unable to open old journal file: " + journalFile, e);
+            throw new BlockIOException(e);
+        }
         try {
             try {
                 while (true) {
@@ -164,7 +169,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
                     tByteBuffer.flip();
                     update(tByteBuffer, longTimestamp).call();
                 }
-            } catch  (EOFException eofEx) {
+            } catch (EOFException eofEx) {
             } catch (Exception e) {
                 close();
                 getReactor().error("exception while processing journal file: " + journalFile, e);
@@ -185,6 +190,8 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
      * @param transactionClass The transaction class.
      */
     public void registerTransaction(String transactionName, Class transactionClass) {
+        if (jc != null)
+            throw new UnsupportedOperationException("journal file already open");
         transactionRegistry.put(transactionName, transactionClass);
     }
 
@@ -517,8 +524,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
             getReactor().error("unable to open db to create a new file", ex);
             throw new BlockIOException(ex);
         }
-        processJournalFiles();
-        openJournalFile();
+        newDatabase = true;
     }
 
     /**
@@ -776,7 +782,6 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
             getReactor().error("Unable to open existing db file", ex);
             throw new BlockIOException(ex);
         }
-        openJournalFile();
     }
 
     protected RootBlock readRootBlock(long position) {

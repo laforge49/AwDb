@@ -96,6 +96,10 @@ public class AwDb implements AutoCloseable {
         db.close();
     }
 
+    public void openJournalFile() {
+        db.openJournalFile();
+    }
+
     public void registerTransaction(String transactionName, Class transactionClass) {
         db.registerTransaction(transactionName, transactionClass);
     }
