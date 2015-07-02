@@ -14,6 +14,7 @@ import org.agilewiki.jactor2.core.blades.IsolationBladeBase;
 import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
 import org.agilewiki.jactor2.core.messages.impl.AsyncRequestImpl;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -23,7 +24,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -71,7 +74,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     public void setJournalDirectory(Path journalDirectoryPath, boolean clearJournals)
             throws IOException {
         if (fc != null)
-            throw new IllegalStateException("already open");
+            throw new IllegalStateException("database already open");
         this.journalDirectoryPath = journalDirectoryPath;
         journalDirectoryFile = journalDirectoryPath.toFile();
         if (!journalDirectoryFile.exists()) {
@@ -95,13 +98,81 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
         DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss.SSS");
         String journalFileName = formatter.format(date) + ".jnl";
         journalFilePath = Paths.get(journalDirectoryPath.toString(), journalFileName);
-        System.out.println(journalFilePath);
         try {
             jc = FileChannel.open(journalFilePath, APPEND, WRITE, SYNC, CREATE_NEW);
         } catch (IOException e) {
             close();
-            getReactor().error("unable to open journal file", e);
+            getReactor().error("unable to open new journal file", e);
             throw new BlockIOException(e);
+        }
+    }
+
+    private void writeJournalEntry(ByteBuffer tByteBuffer) throws IOException {
+        if (jc != null) {
+            ByteBuffer jh = ByteBuffer.allocate(12);
+            jh.putLong(timestamp);
+            jh.putInt(tByteBuffer.position());
+            jh.flip();
+            while (jh.hasRemaining()) {
+                jc.write(jh);
+            }
+            tByteBuffer.rewind();
+            while (tByteBuffer.hasRemaining()) {
+                jc.write(tByteBuffer);
+            }
+        }
+    }
+
+    private void processJournalFiles() {
+        File[] journalFiles = journalDirectoryFile.listFiles();
+        Arrays.sort(journalFiles);
+        for (File journalFile : journalFiles) {
+            processJournalFile(journalFile.toPath());
+        }
+    }
+
+    private void processJournalFile(Path journalFile) {
+        System.out.println("processing " + journalFile);
+            FileChannel journalChannel;
+            try {
+                journalChannel = FileChannel.open(journalFile, READ);
+            } catch (IOException e) {
+                close();
+                getReactor().error("unable to open old journal file: " + journalFile, e);
+                throw new BlockIOException(e);
+            }
+        try {
+            try {
+                while (true) {
+                    ByteBuffer jh = ByteBuffer.allocate(12);
+                    while (jh.hasRemaining()) {
+                        int r = journalChannel.read(jh);
+                        if (r == -1)
+                            throw new EOFException();
+                    }
+                    jh.flip();
+                    long longTimestamp = jh.getLong();
+                    int len = jh.getInt();
+                    ByteBuffer tByteBuffer = ByteBuffer.allocate(len);
+                    while (tByteBuffer.hasRemaining()) {
+                        int r = journalChannel.read(tByteBuffer);
+                        if (r == -1)
+                            throw new EOFException();
+                    }
+                    tByteBuffer.flip();
+                    update(tByteBuffer, longTimestamp).call();
+                }
+            } catch  (EOFException eofEx) {
+            } catch (Exception e) {
+                close();
+                getReactor().error("exception while processing journal file: " + journalFile, e);
+                throw new BlockIOException(e);
+            }
+        } finally {
+            try {
+                journalChannel.close();
+            } catch (IOException e) {
+            }
         }
     }
 
@@ -444,6 +515,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
             getReactor().error("unable to open db to create a new file", ex);
             throw new BlockIOException(ex);
         }
+        processJournalFiles();
         openJournalFile();
     }
 
@@ -470,6 +542,11 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
         return update(tMapNode.toByteBuffer());
     }
 
+    public AReq<String> update(ByteBuffer tByteBuffer) {
+        long longTimestamp = Timestamp.generate();
+        return update(tByteBuffer, longTimestamp);
+    }
+
     /**
      * Update the database.
      * First deserialize the map list held by the byte buffer, then fetch the name of the
@@ -480,7 +557,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
      * @param tByteBuffer Holds the serialized transaction which will transform the db contents.
      * @return The request to perform the update.
      */
-    public AReq<String> update(ByteBuffer tByteBuffer) {
+    public AReq<String> update(ByteBuffer tByteBuffer, long longTimestamp) {
         return new AReq<String>("update") {
             @Override
             protected void processAsyncOperation(AsyncRequestImpl _asyncRequestImpl,
@@ -494,7 +571,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
                     _asyncRequestImpl.setMessageTimeoutMillis(transaction.timeoutMillis());
                     privilegedThread = Thread.currentThread();
                     try {
-                        timestamp = Timestamp.generate();
+                        timestamp = longTimestamp;
                         dbMapNode = mapNode;
                         VersionedMapNode je = dbFactoryRegistry.versionedNilMap;
                         jeName = Timestamp.timestampId(timestamp);
@@ -507,12 +584,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
                         }
                         dbMapNode = dbMapNode.add(jeName, je);
                         transaction.transform(Db.this, tMapNode);
-                        if (jc != null) {
-                            tByteBuffer.rewind();
-                            while (tByteBuffer.hasRemaining()) {
-                                jc.write(tByteBuffer);
-                            }
-                        }
+                        writeJournalEntry(tByteBuffer);
                         _update();
                     } finally {
                         privilegedThread = null;
