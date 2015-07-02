@@ -3,14 +3,6 @@ package org.agilewiki.awdb;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.agilewiki.awdb.db.virtualcow.Display;
-import org.agilewiki.awdb.nodes.Key_NodeFactory;
-import org.agilewiki.awdb.nodes.Metadata_NodeFactory;
-import org.agilewiki.jactor2.core.blades.BladeBase;
-import org.agilewiki.jactor2.core.blades.NonBlockingBladeBase;
-import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
-import org.agilewiki.jactor2.core.messages.ExceptionHandler;
-import org.agilewiki.jactor2.core.messages.impl.AsyncRequestImpl;
 import org.agilewiki.awdb.db.ids.RandomId;
 import org.agilewiki.awdb.db.ids.Timestamp;
 import org.agilewiki.awdb.db.ids.composites.Journal;
@@ -21,11 +13,18 @@ import org.agilewiki.awdb.db.immutable.FactoryRegistry;
 import org.agilewiki.awdb.db.immutable.collections.*;
 import org.agilewiki.awdb.db.virtualcow.Db;
 import org.agilewiki.awdb.db.virtualcow.DbFactoryRegistry;
+import org.agilewiki.awdb.db.virtualcow.Display;
+import org.agilewiki.awdb.nodes.Key_NodeFactory;
+import org.agilewiki.awdb.nodes.Metadata_NodeFactory;
+import org.agilewiki.jactor2.core.blades.BladeBase;
+import org.agilewiki.jactor2.core.blades.NonBlockingBladeBase;
+import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
+import org.agilewiki.jactor2.core.messages.ExceptionHandler;
+import org.agilewiki.jactor2.core.messages.impl.AsyncRequestImpl;
 
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -55,9 +54,7 @@ public class AwDb implements AutoCloseable {
         awDb = this;
         dbUpdater = new DbUpdater();
         db = new Db(new BaseRegistry(), dbPath, maxRootBlockSize);
-        db.setJournalDirectoryPath(journalDirectoryPath);
-        if (clearJournals)
-            db.clearJournalDirectory();
+        db.setJournalDirectory(journalDirectoryPath, clearJournals);
         if (Files.exists(dbPath))
             db.open();
         else

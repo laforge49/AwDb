@@ -1,8 +1,5 @@
 package org.agilewiki.awdb.db.virtualcow;
 
-import org.agilewiki.jactor2.core.blades.IsolationBladeBase;
-import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
-import org.agilewiki.jactor2.core.messages.impl.AsyncRequestImpl;
 import org.agilewiki.awdb.db.BlockIOException;
 import org.agilewiki.awdb.db.dsm.DiskSpaceManager;
 import org.agilewiki.awdb.db.ids.Timestamp;
@@ -13,6 +10,9 @@ import org.agilewiki.awdb.db.immutable.ImmutableFactory;
 import org.agilewiki.awdb.db.immutable.collections.*;
 import org.agilewiki.awdb.db.immutable.scalars.CS256;
 import org.agilewiki.awdb.db.immutable.scalars.CS256Factory;
+import org.agilewiki.jactor2.core.blades.IsolationBladeBase;
+import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
+import org.agilewiki.jactor2.core.messages.impl.AsyncRequestImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +20,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -45,6 +49,8 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     private String jeName;
     private Path journalDirectoryPath = null;
     private File journalDirectoryFile = null;
+    private Path journalFilePath = null;
+    private FileChannel jc;
 
     /**
      * Create a Db actor.
@@ -62,20 +68,40 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
         timestamp = Timestamp.generate();
     }
 
-    public void setJournalDirectoryPath(Path journalDirectoryPath) {
+    public void setJournalDirectory(Path journalDirectoryPath, boolean clearJournals)
+            throws IOException {
+        if (fc != null)
+            throw new IllegalStateException("already open");
         this.journalDirectoryPath = journalDirectoryPath;
         journalDirectoryFile = journalDirectoryPath.toFile();
         if (!journalDirectoryFile.exists()) {
             if (!journalDirectoryFile.mkdir())
                 throw new IllegalStateException("journal directory not created: " + journalDirectoryFile);
         }
+        if (clearJournals) {
+            File[] journalFiles = journalDirectoryFile.listFiles();
+            for (File journalFile : journalFiles) {
+                Path journalPath = journalFile.toPath();
+                Files.delete(journalPath);
+            }
+        }
     }
 
-    public void clearJournalDirectory() throws IOException {
-        File[] journalFiles = journalDirectoryFile.listFiles();
-        for (File journalFile : journalFiles) {
-            Path journalPath = journalFile.toPath();
-            Files.delete(journalPath);
+    private void openJournalFile() {
+        if (journalDirectoryPath == null)
+            return;
+        long time = System.currentTimeMillis();
+        Date date = new Date(time);
+        DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss.SSS");
+        String journalFileName = formatter.format(date) + ".jnl";
+        journalFilePath = Paths.get(journalDirectoryPath.toString(), journalFileName);
+        System.out.println(journalFilePath);
+        try {
+            jc = FileChannel.open(journalFilePath, APPEND, WRITE, SYNC, CREATE_NEW);
+        } catch (IOException e) {
+            close();
+            getReactor().error("unable to open journal file", e);
+            throw new BlockIOException(e);
         }
     }
 
@@ -151,8 +177,8 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     /**
      * Iterates over the non-empty Ids.
      *
-     * @param prefix       The prefix of the ids.
-     * @param timestamp    The time of the query.
+     * @param prefix    The prefix of the ids.
+     * @param timestamp The time of the query.
      * @return The key iterable.
      */
     public PeekABoo<String> idsIterable(String prefix, long timestamp) {
@@ -418,6 +444,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
             getReactor().error("unable to open db to create a new file", ex);
             throw new BlockIOException(ex);
         }
+        openJournalFile();
     }
 
     /**
@@ -480,6 +507,12 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
                         }
                         dbMapNode = dbMapNode.add(jeName, je);
                         transaction.transform(Db.this, tMapNode);
+                        if (jc != null) {
+                            tByteBuffer.rewind();
+                            while (tByteBuffer.hasRemaining()) {
+                                jc.write(tByteBuffer);
+                            }
+                        }
                         _update();
                     } finally {
                         privilegedThread = null;
@@ -597,6 +630,14 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
 
     @Override
     public void close() {
+        if (jc != null) {
+            try {
+                jc.close();
+            } catch (IOException ex) {
+                throw new BlockIOException(ex);
+            }
+            jc = null;
+        }
         if (fc != null) {
             try {
                 fc.close();
@@ -661,6 +702,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
             getReactor().error("Unable to open existing db file", ex);
             throw new BlockIOException(ex);
         }
+        openJournalFile();
     }
 
     protected RootBlock readRootBlock(long position) {
