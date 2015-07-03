@@ -90,11 +90,18 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
         }
     }
 
+    public Path getJournalDirectoryPath() {
+        return journalDirectoryPath;
+    }
+    public boolean isNewDatabase() {
+        return newDatabase;
+    }
+
+    public File getJournalDirectoryFile() {
+        return journalDirectoryFile;
+    }
+
     public void openJournalFile() {
-        if (journalDirectoryPath == null)
-            return;
-        if (newDatabase)
-            processJournalFiles();
         long time = System.currentTimeMillis();
         Date date = new Date(time);
         DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd-HH.mm.ss.SSS");
@@ -110,11 +117,9 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     }
 
     private void writeJournalEntry(ByteBuffer tByteBuffer) throws IOException {
-        if (journalDirectoryPath == null) {
+        if (jc == null) {
             return;
         }
-        if (jc == null)
-            throw new IllegalStateException("Journal file not opened.");
         ByteBuffer jh = ByteBuffer.allocate(12);
         jh.putLong(timestamp);
         jh.putInt(tByteBuffer.position());
@@ -125,61 +130,6 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
         tByteBuffer.rewind();
         while (tByteBuffer.hasRemaining()) {
             jc.write(tByteBuffer);
-        }
-    }
-
-    private void processJournalFiles() {
-        if (journalDirectoryFile == null)
-            return;
-        File[] journalFiles = journalDirectoryFile.listFiles();
-        Arrays.sort(journalFiles);
-        for (File journalFile : journalFiles) {
-            processJournalFile(journalFile.toPath());
-        }
-    }
-
-    private void processJournalFile(Path journalFile) {
-        System.out.println("processing " + journalFile);
-        FileChannel journalChannel;
-        try {
-            journalChannel = FileChannel.open(journalFile, READ);
-        } catch (IOException e) {
-            close();
-            getReactor().error("unable to open old journal file: " + journalFile, e);
-            throw new BlockIOException(e);
-        }
-        try {
-            try {
-                while (true) {
-                    ByteBuffer jh = ByteBuffer.allocate(12);
-                    while (jh.hasRemaining()) {
-                        int r = journalChannel.read(jh);
-                        if (r == -1)
-                            throw new EOFException();
-                    }
-                    jh.flip();
-                    long longTimestamp = jh.getLong();
-                    int len = jh.getInt();
-                    ByteBuffer tByteBuffer = ByteBuffer.allocate(len);
-                    while (tByteBuffer.hasRemaining()) {
-                        int r = journalChannel.read(tByteBuffer);
-                        if (r == -1)
-                            throw new EOFException();
-                    }
-                    tByteBuffer.flip();
-                    update(tByteBuffer, longTimestamp).call();
-                }
-            } catch (EOFException eofEx) {
-            } catch (Exception e) {
-                close();
-                getReactor().error("exception while processing journal file: " + journalFile, e);
-                throw new BlockIOException(e);
-            }
-        } finally {
-            try {
-                journalChannel.close();
-            } catch (IOException e) {
-            }
         }
     }
 
