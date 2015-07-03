@@ -15,6 +15,7 @@ import org.agilewiki.awdb.db.immutable.collections.*;
 import org.agilewiki.awdb.db.virtualcow.Db;
 import org.agilewiki.awdb.db.virtualcow.DbFactoryRegistry;
 import org.agilewiki.awdb.db.virtualcow.Display;
+import org.agilewiki.awdb.nodes.InitializeDatabase_Node;
 import org.agilewiki.awdb.nodes.Key_NodeFactory;
 import org.agilewiki.awdb.nodes.Metadata_NodeFactory;
 import org.agilewiki.jactor2.core.blades.BladeBase;
@@ -43,13 +44,14 @@ public class AwDb implements AutoCloseable {
     private final Db db;
     private LoadingCache<String, Node> nodeCache;
     private Map<String, Node> updatedNodes;
-    private final DbUpdater dbUpdater;
+    private DbUpdater dbUpdater;
     private final DbFactoryRegistry dbFactoryRegistry;
     private final Map<String, Node> timelessNodes = new HashMap<String, Node>();
     public final VersionedListNode versionedNilList;
     public final VersionedMapNode versionedNilMap;
     public final ListNode nilList;
     public final MapNode nilMap;
+    private boolean virginDatabase;
 
     public static AwDb getAwDb() {
         return awDb;
@@ -59,13 +61,13 @@ public class AwDb implements AutoCloseable {
                 Path journalDirectoryPath, boolean clearJournals)
             throws Exception {
         awDb = this;
-        dbUpdater = new DbUpdater();
         db = new Db(new BaseRegistry(), dbPath, maxRootBlockSize);
         db.setJournalDirectory(journalDirectoryPath, clearJournals);
         if (Files.exists(dbPath))
             db.open();
         else
             db.open(true);
+        virginDatabase = db.isNewDatabase();
 
         dbFactoryRegistry = db.dbFactoryRegistry;
         versionedNilList = dbFactoryRegistry.versionedNilList;
@@ -103,13 +105,17 @@ public class AwDb implements AutoCloseable {
         db.close();
     }
 
-    public void openJournalFile() {
-        if (db.getJournalDirectoryPath() == null)
-            return;
-        if (db.isNewDatabase()) {
-            processJournalFiles();
+    public void initialize() throws Exception {
+        dbUpdater = new DbUpdater();
+        if (db.getJournalDirectoryPath() != null) {
+            if (db.isNewDatabase()) {
+                processJournalFiles();
+            }
+            db.openJournalFile();
         }
-        db.openJournalFile();
+        if (virginDatabase) {
+            InitializeDatabase_Node.update(this);
+        }
     }
 
     private void processJournalFiles() {
@@ -133,6 +139,7 @@ public class AwDb implements AutoCloseable {
             db.getReactor().error("unable to open old journal file: " + journalFile, e);
             throw new BlockIOException(e);
         }
+        virginDatabase = false;
         try {
             try {
                 while (true) {
