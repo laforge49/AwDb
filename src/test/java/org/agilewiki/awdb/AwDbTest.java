@@ -2,7 +2,6 @@ package org.agilewiki.awdb;
 
 import junit.framework.TestCase;
 import org.agilewiki.awdb.db.immutable.FactoryRegistry;
-import org.agilewiki.awdb.db.virtualcow.DbTran;
 import org.agilewiki.jactor2.core.impl.Plant;
 
 import java.nio.file.Files;
@@ -22,7 +21,7 @@ public class AwDbTest extends TestCase {
             try (AwDb awDb = new AwDb(dbPath, maxRootBlockSize, maxNodeCacheSize,
                     journalDirectoryPath, clearJournals)) {
                 awDb.registerTransaction(AwDbTran.NAME, AwDbTran.class);
-                awDb.openJournalFile();
+                awDb.initialize();
                 awDb.update(AwDbTran.NAME, awDb.nilMap).call();
                 awDb.displayAll(FactoryRegistry.MAX_TIMESTAMP);
                 awDb.close();
