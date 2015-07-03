@@ -3,6 +3,7 @@ package org.agilewiki.awdb;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.agilewiki.awdb.db.BlockIOException;
 import org.agilewiki.awdb.db.ids.RandomId;
 import org.agilewiki.awdb.db.ids.Timestamp;
 import org.agilewiki.awdb.db.ids.composites.Journal;
@@ -22,10 +23,16 @@ import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
 import org.agilewiki.jactor2.core.messages.ExceptionHandler;
 import org.agilewiki.jactor2.core.messages.impl.AsyncRequestImpl;
 
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+
+import static java.nio.file.StandardOpenOption.READ;
 
 /**
  * Object Oriented Database, without state caching.
@@ -97,7 +104,68 @@ public class AwDb implements AutoCloseable {
     }
 
     public void openJournalFile() {
+        if (db.getJournalDirectoryPath() == null)
+            return;
+        if (db.isNewDatabase()) {
+            processJournalFiles();
+        }
         db.openJournalFile();
+    }
+
+    private void processJournalFiles() {
+        File journalDirectoryFile = db.getJournalDirectoryFile();
+        if (journalDirectoryFile == null)
+            return;
+        File[] journalFiles = journalDirectoryFile.listFiles();
+        Arrays.sort(journalFiles);
+        for (File journalFile : journalFiles) {
+            processJournalFile(journalFile.toPath());
+        }
+    }
+
+    private void processJournalFile(Path journalFile) {
+        System.out.println("processing " + journalFile);
+        FileChannel journalChannel;
+        try {
+            journalChannel = FileChannel.open(journalFile, READ);
+        } catch (IOException e) {
+            close();
+            db.getReactor().error("unable to open old journal file: " + journalFile, e);
+            throw new BlockIOException(e);
+        }
+        try {
+            try {
+                while (true) {
+                    ByteBuffer jh = ByteBuffer.allocate(12);
+                    while (jh.hasRemaining()) {
+                        int r = journalChannel.read(jh);
+                        if (r == -1)
+                            throw new EOFException();
+                    }
+                    jh.flip();
+                    long longTimestamp = jh.getLong();
+                    int len = jh.getInt();
+                    ByteBuffer tByteBuffer = ByteBuffer.allocate(len);
+                    while (tByteBuffer.hasRemaining()) {
+                        int r = journalChannel.read(tByteBuffer);
+                        if (r == -1)
+                            throw new EOFException();
+                    }
+                    tByteBuffer.flip();
+                    dbUpdater.update(tByteBuffer, longTimestamp).call();
+                }
+            } catch (EOFException eofEx) {
+            } catch (Exception e) {
+                close();
+                db.getReactor().error("exception while processing journal file: " + journalFile, e);
+                throw new BlockIOException(e);
+            }
+        } finally {
+            try {
+                journalChannel.close();
+            } catch (IOException e) {
+            }
+        }
     }
 
     public void registerTransaction(String transactionName, Class transactionClass) {
@@ -134,8 +202,9 @@ public class AwDb implements AutoCloseable {
 
     public Node fetchNode(String nodeId, long timestamp) {
         char x = nodeId.charAt(1);
-        if (x != 'n' && x != 'r' && x != 't')
+        if (x != 'n' && x != 'r' && x != 't') {
             return null;
+        }
         Node node = timelessNodes.get(nodeId);
         if (node != null)
             return node;
@@ -144,7 +213,7 @@ public class AwDb implements AutoCloseable {
         String timestampId = Timestamp.timestampId(timestamp);
         node = nodeCache.getUnchecked(nodeId + timestampId);
         if (node instanceof NullNode) {
-            dropNode(nodeId);
+            dropNode(nodeId, timestampId);
             return null;
         }
         return node;
@@ -158,8 +227,8 @@ public class AwDb implements AutoCloseable {
         nodeCache.put(node.getNodeId(), node);
     }
 
-    public void dropNode(String nodeId) {
-        nodeCache.invalidate(nodeId);
+    public void dropNode(String nodeId, String timestampId) {
+        nodeCache.invalidate(nodeId + timestampId);
     }
 
     public void startTransaction() {
@@ -433,19 +502,16 @@ public class AwDb implements AutoCloseable {
     // Database Update Request
 
     public BladeBase.AReq<String> update(String transactionName, MapNode tMapNode) {
-        return dbUpdater.update(transactionName, tMapNode);
+        tMapNode = tMapNode.add(Db.transactionNameId, transactionName);
+        long longTimestamp = Timestamp.generate();
+        return dbUpdater.update(tMapNode.toByteBuffer(), longTimestamp);
     }
 
     private class DbUpdater extends NonBlockingBladeBase {
         public DbUpdater() throws Exception {
         }
 
-        public AReq<String> update(String transactionName, MapNode tMapNode) {
-            tMapNode = tMapNode.add(Db.transactionNameId, transactionName);
-            return update(tMapNode.toByteBuffer());
-        }
-
-        public AReq<String> update(ByteBuffer tByteBuffer) {
+        public AReq<String> update(ByteBuffer tByteBuffer, long longTimestamp) {
             return new AReq<String>("update") {
                 @Override
                 protected void processAsyncOperation(AsyncRequestImpl _asyncRequestImpl,
@@ -458,7 +524,7 @@ public class AwDb implements AutoCloseable {
                         }
                     });
                     startTransaction();
-                    _asyncRequestImpl.send(db.update(tByteBuffer), new AsyncResponseProcessor<String>() {
+                    _asyncRequestImpl.send(db.update(tByteBuffer, longTimestamp), new AsyncResponseProcessor<String>() {
                         @Override
                         public void processAsyncResponse(String _response) throws Exception {
                             endTransaction();
