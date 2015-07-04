@@ -10,6 +10,9 @@ public class NameId {
      */
     public static final String PREFIX = "$n";
 
+    public static final String USER_KEY = generate("user");
+    public final static String TRANSACTION_NAME = "$ntransactionName";
+
     public static String name(String nameId) {
         return nameId.substring(2);
     }

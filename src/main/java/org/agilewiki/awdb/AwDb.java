@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.agilewiki.awdb.db.BlockIOException;
+import org.agilewiki.awdb.db.ids.NameId;
 import org.agilewiki.awdb.db.ids.RandomId;
 import org.agilewiki.awdb.db.ids.Timestamp;
 import org.agilewiki.awdb.db.ids.composites.Journal;
@@ -509,7 +510,7 @@ public class AwDb implements AutoCloseable {
     // Database Update Request
 
     public BladeBase.AReq<String> update(String transactionName, MapNode tMapNode) {
-        tMapNode = tMapNode.add(Db.transactionNameId, transactionName);
+        tMapNode = tMapNode.add(NameId.TRANSACTION_NAME, transactionName);
         long longTimestamp = Timestamp.generate();
         return dbUpdater.update(tMapNode.toByteBuffer(), longTimestamp);
     }

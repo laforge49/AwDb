@@ -2,6 +2,7 @@ package org.agilewiki.awdb.db.virtualcow;
 
 import org.agilewiki.awdb.db.BlockIOException;
 import org.agilewiki.awdb.db.dsm.DiskSpaceManager;
+import org.agilewiki.awdb.db.ids.NameId;
 import org.agilewiki.awdb.db.ids.Timestamp;
 import org.agilewiki.awdb.db.ids.ValueId;
 import org.agilewiki.awdb.db.ids.composites.Journal;
@@ -34,7 +35,6 @@ import static java.nio.file.StandardOpenOption.*;
  * A database that supports multiple blocks.
  */
 public class Db extends IsolationBladeBase implements AutoCloseable {
-    public final static String transactionNameId = "$ntransactionName";
 
     public final ConcurrentHashMap<String, Class> transactionRegistry =
             new ConcurrentHashMap<>(16, 0.75f, 1);
@@ -496,7 +496,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
      * @return The request to perform the update.
      */
     public AReq<String> update(String transactionName, MapNode tMapNode) {
-        tMapNode = tMapNode.add(Db.transactionNameId, transactionName);
+        tMapNode = tMapNode.add(NameId.TRANSACTION_NAME, transactionName);
         return update(tMapNode.toByteBuffer());
     }
 
@@ -523,7 +523,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
                 try {
                     ImmutableFactory f = dbFactoryRegistry.readId(tByteBuffer);
                     MapNode tMapNode = (MapNode) f.deserialize(tByteBuffer);
-                    String transactionName = (String) tMapNode.getList(Db.transactionNameId).get(0);
+                    String transactionName = (String) tMapNode.getList(NameId.TRANSACTION_NAME).get(0);
                     Class tClass = transactionRegistry.get(transactionName);
                     Transaction transaction = (Transaction) tClass.newInstance();
                     _asyncRequestImpl.setMessageTimeoutMillis(transaction.timeoutMillis());
