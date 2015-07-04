@@ -15,6 +15,8 @@ public class Key_NodeFactory extends Metadata_NodeFactory {
     final public static String INVDEPENDENCY_KEY_ID = "$ninvDependency.key";
     final public static String ATTRIBUTENAME_ID = "$nattributeName";
     final public static String ATTRIBUTENAME_KEY_ID = "$nattributeName.key";
+    final public static String SUBJECT_ID = "$nsubject";
+    final public static String SUBJECT_KEY_ID = "$nsubject.key";
 
     public static void create(AwDb awDb) {
         awDb.addTimelessNode(new Key_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));
