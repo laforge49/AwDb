@@ -20,6 +20,13 @@ public class Key_NodeFactory extends Metadata_NodeFactory {
         awDb.addTimelessNode(new Key_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));
     }
 
+    public static void define(String nodeId, String targetType) {
+        Node_NodeFactory.define(nodeId, Key_NodeFactory.ID, null);
+        getAwDb().createLnk1(nodeId,
+                Lnk1_NodeFactory.TARGET_ID,
+                targetType);
+    }
+
     public Key_NodeFactory(String nodeId, long timestamp) {
         super(nodeId, timestamp);
     }

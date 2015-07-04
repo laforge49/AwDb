@@ -2,6 +2,7 @@ package org.agilewiki.awdb.nodes;
 
 import org.agilewiki.awdb.AwDb;
 import org.agilewiki.awdb.Node;
+import org.agilewiki.awdb.db.ids.NameId;
 import org.agilewiki.awdb.db.immutable.FactoryRegistry;
 
 public class Attribute_NodeFactory extends Node_Node {
@@ -14,7 +15,7 @@ public class Attribute_NodeFactory extends Node_Node {
     public static void define(String attributeNameId, String nodeId) {
         AwDb awDb = getAwDb();
         String attributeId = AwDb.randomId.generate();
-        awDb.set(attributeId, "$nsubject", attributeNameId + " - " + nodeId);
+        awDb.set(attributeId, NameId.SUBJECT, attributeNameId + " - " + nodeId);
         awDb.createSecondaryId(attributeId, Key_NodeFactory.NODETYPE_ID, ID);
         awDb.createSecondaryId(attributeId, Key_NodeFactory.ATTRIBUTENAME_ID, attributeNameId);
         awDb.createLnk1(attributeId, Lnk1_NodeFactory.ATTRIBUTEOF_ID, nodeId);

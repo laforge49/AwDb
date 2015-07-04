@@ -21,6 +21,20 @@ public class Lnk1_NodeFactory extends Metadata_NodeFactory {
         awDb.addTimelessNode(new Lnk1_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));
     }
 
+    public static void define(String nodeId, String invDependency, String originType, String destinationType) {
+        AwDb awDb = getAwDb();
+        Node_NodeFactory.define(nodeId, Lnk1_NodeFactory.ID, null);
+        if (invDependency != null) {
+            awDb.createSecondaryId(nodeId, Key_NodeFactory.INVDEPENDENCY_ID, invDependency);
+        }
+        awDb.createLnk1(nodeId,
+                Lnk1_NodeFactory.ORIGIN_ID,
+                originType);
+        awDb.createLnk1(nodeId,
+                Lnk1_NodeFactory.DESTINATION_ID,
+                destinationType);
+    }
+
     public Lnk1_NodeFactory(String nodeId, long timestamp) {
         super(nodeId, timestamp);
     }

@@ -12,6 +12,7 @@ public class NameId {
 
     public static final String USER_KEY = generate("user");
     public final static String TRANSACTION_NAME = "$ntransactionName";
+    public final static String SUBJECT = generate("subject");
 
     public static String name(String nameId) {
         return nameId.substring(2);

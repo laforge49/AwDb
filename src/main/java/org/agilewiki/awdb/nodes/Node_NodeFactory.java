@@ -15,6 +15,19 @@ public class Node_NodeFactory extends Metadata_NodeFactory {
         User_NodeFactory.create(awDb);
     }
 
+    public static void define(String nodeId, String nodeType, String superType, String... attributes) {
+        AwDb awDb = getAwDb();
+        if (nodeType != null) {
+            awDb.createSecondaryId(nodeId, Key_NodeFactory.NODETYPE_ID, nodeType);
+        }
+        if (superType != null) {
+            awDb.createSecondaryId(nodeId, Key_NodeFactory.SUPERTYPE_ID, superType);
+        }
+        for (String attributeName : attributes) {
+            Attribute_NodeFactory.define(attributeName, nodeId);
+        }
+    }
+
     public Node_NodeFactory(String nodeId, long timestamp) {
         super(nodeId, timestamp);
     }
