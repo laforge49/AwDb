@@ -12,6 +12,7 @@ public class Node_NodeFactory extends Metadata_NodeFactory {
         awDb.addTimelessNode(new Node_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));
         JournalEntry_NodeFactory.create(awDb);
         Attribute_NodeFactory.create(awDb);
+        User_NodeFactory.create(awDb);
     }
 
     public Node_NodeFactory(String nodeId, long timestamp) {
