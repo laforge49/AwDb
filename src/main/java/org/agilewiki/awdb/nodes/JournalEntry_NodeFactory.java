@@ -10,8 +10,9 @@ public class JournalEntry_NodeFactory extends Node_Node {
     public static void create(AwDb awDb) {
         awDb.addTimelessNode(new JournalEntry_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));
         InitializeDatabase_NodeFactory.create(awDb);
-        Delete_NodeFactory.create(awDb);
         awDb.registerTransaction(InitializeDatabase_Node.NAME, InitializeDatabase_Node.class);
+        Delete_NodeFactory.create(awDb);
+        awDb.registerTransaction(Delete_Node.NAME, Delete_Node.class);
     }
 
     public JournalEntry_NodeFactory(String nodeId, long timestamp) {

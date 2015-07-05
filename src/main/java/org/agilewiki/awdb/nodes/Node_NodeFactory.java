@@ -10,6 +10,7 @@ public class Node_NodeFactory extends Metadata_NodeFactory {
     public static void create(AwDb awDb)
             throws Exception {
         awDb.addTimelessNode(new Node_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));
+        Realm_NodeFactory.create(awDb);
         JournalEntry_NodeFactory.create(awDb);
         Attribute_NodeFactory.create(awDb);
         User_NodeFactory.create(awDb);
