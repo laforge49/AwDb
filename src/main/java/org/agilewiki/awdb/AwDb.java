@@ -232,7 +232,9 @@ public class AwDb implements AutoCloseable {
     }
 
     public void addNode(Node node) {
-        nodeCache.put(node.getNodeId(), node);
+        long timestamp = FactoryRegistry.MAX_TIMESTAMP;
+        String timestampId = Timestamp.timestampId(timestamp);
+        nodeCache.put(node.getNodeId() + timestampId, node);
     }
 
     public void dropNode(String nodeId, String timestampId) {

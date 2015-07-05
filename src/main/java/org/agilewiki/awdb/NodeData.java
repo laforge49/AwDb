@@ -94,6 +94,7 @@ public class NodeData {
             l = new ArrayList();
             atts.put(key, l);
         }
+        l.clear();
         l.add(value);
     }
 

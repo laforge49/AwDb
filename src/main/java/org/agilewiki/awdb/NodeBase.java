@@ -3,6 +3,7 @@ package org.agilewiki.awdb;
 import org.agilewiki.awdb.db.ids.NameId;
 import org.agilewiki.awdb.db.immutable.FactoryRegistry;
 import org.agilewiki.awdb.nodes.Key_NodeFactory;
+import org.agilewiki.awdb.nodes.User_NodeFactory;
 
 import java.util.List;
 import java.util.NavigableMap;
@@ -177,8 +178,8 @@ public class NodeBase implements Node {
             throw new UnsupportedOperationException("not a generative node: " + getClass().getName());
         initialize(nodeId, FactoryRegistry.MAX_TIMESTAMP);
         getAwDb().createSecondaryId(nodeId, Key_NodeFactory.NODETYPE_ID, nodeTypeId);
-        if (userId != null) {
-            getAwDb().createLnk1(getNodeId(), NameId.USER_KEY, userId);
-        }
+        if (userId == null)
+            userId = User_NodeFactory.SYSTEM_USER_ID;
+        getAwDb().createLnk1(getNodeId(), NameId.USER_KEY, userId);
     }
 }
