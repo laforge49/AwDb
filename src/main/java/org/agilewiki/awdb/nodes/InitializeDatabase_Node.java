@@ -37,7 +37,6 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
 
         Node_NodeFactory.define(Delete_NodeFactory.ID, Node_NodeFactory.ID, JournalEntry_NodeFactory.ID,
                 NameId.USER_KEY, NameId.AN_ID);
-
         Node_NodeFactory.define(Metadata_NodeFactory.ID, Node_NodeFactory.ID, null);
         Node_NodeFactory.define(Node_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
         Node_NodeFactory.define(Key_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
@@ -46,5 +45,7 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
                 NameId.SUBJECT);
         Node_NodeFactory.define(JournalEntry_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
         Node_NodeFactory.define(Realm_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
+        Node_NodeFactory.define(User_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID,
+                NameId.SUBJECT);
     }
 }
