@@ -1,4 +1,4 @@
-package org.agilewiki.awdb.nodes;
+package org.agilewiki.awdb;
 
 import org.agilewiki.awdb.Node;
 

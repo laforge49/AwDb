@@ -1,8 +1,8 @@
 package org.agilewiki.awdb.nodes;
 
+import org.agilewiki.awdb.GenerativeNode;
 import org.agilewiki.awdb.NodeBase;
 import org.agilewiki.awdb.db.ids.NameId;
-import org.agilewiki.awdb.db.immutable.FactoryRegistry;
 import org.agilewiki.awdb.db.immutable.collections.MapNode;
 import org.agilewiki.awdb.db.virtualcow.Db;
 import org.agilewiki.awdb.db.virtualcow.Transaction;
