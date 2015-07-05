@@ -35,6 +35,9 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.DESTINATION_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_LNK1_ID, null, Metadata_NodeFactory.ID, User_NodeFactory.ID);
 
+        Node_NodeFactory.define(Delete_NodeFactory.ID, Node_NodeFactory.ID, JournalEntry_NodeFactory.ID,
+                NameId.USER_KEY, NameId.AN_ID);
+
         Node_NodeFactory.define(Metadata_NodeFactory.ID, Node_NodeFactory.ID, null);
         Node_NodeFactory.define(Node_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
         Node_NodeFactory.define(Key_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
