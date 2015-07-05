@@ -33,7 +33,7 @@ public class Node_NodeFactory extends Metadata_NodeFactory {
     }
 
     @Override
-    public Node createNode(String nodeId, long timestamp) {
+    public Node instantiateNode(String nodeId, long timestamp) {
         throw new UnsupportedOperationException(nodeId);
     }
 }

@@ -19,7 +19,7 @@ public class JournalEntry_NodeFactory extends Node_Node {
     }
 
     @Override
-    public Node createNode(String nodeId, long timestamp) {
+    public Node instantiateNode(String nodeId, long timestamp) {
         throw new UnsupportedOperationException();
     }
 }

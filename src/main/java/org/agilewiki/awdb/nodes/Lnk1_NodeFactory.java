@@ -42,7 +42,7 @@ public class Lnk1_NodeFactory extends Metadata_NodeFactory {
     }
 
     @Override
-    public Node createNode(String nodeId, long timestamp) {
+    public Node instantiateNode(String nodeId, long timestamp) {
         return new Lnk1_Node(nodeId, timestamp);
     }
 }

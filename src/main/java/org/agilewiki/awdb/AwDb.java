@@ -92,7 +92,7 @@ public class AwDb implements AutoCloseable {
                 }
                 String timestampId = id.substring(i);
                 long longTimestamp = Timestamp.timestamp(timestampId);
-                Node node = nodeFactory.createNode(nodeId, longTimestamp);
+                Node node = nodeFactory.instantiateNode(nodeId, longTimestamp);
                 if (node == null)
                     return NullNode.singleton;
                 return node;

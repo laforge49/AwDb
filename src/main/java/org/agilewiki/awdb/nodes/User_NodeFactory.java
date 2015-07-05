@@ -16,7 +16,7 @@ public class User_NodeFactory extends Node_Node {
     }
 
     @Override
-    public Node createNode(String nodeId, long timestamp) {
+    public Node instantiateNode(String nodeId, long timestamp) {
         return new User_Node(nodeId, timestamp);
     }
 }
