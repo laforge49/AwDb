@@ -29,7 +29,7 @@ public class JournalEntry_Node extends NodeBase implements Transaction, Generati
         String transactionName = tMapNode.get(NameId.TRANSACTION_NAME).toString();
         String nodeTypeId = NameId.generate(transactionName + ".node");
         String userId = (String) tMapNode.get(NameId.USER_KEY);
-        createNode(nodeId, nodeTypeId, userId, null);
+        createNode(nodeId, nodeTypeId, userId, Realm_NodeFactory.SYSTEM_REALM_ID);
     }
 
     public void process(Db db, MapNode tMapNode) {

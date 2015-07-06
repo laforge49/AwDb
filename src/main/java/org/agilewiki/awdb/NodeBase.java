@@ -3,6 +3,7 @@ package org.agilewiki.awdb;
 import org.agilewiki.awdb.db.ids.NameId;
 import org.agilewiki.awdb.db.immutable.FactoryRegistry;
 import org.agilewiki.awdb.nodes.Key_NodeFactory;
+import org.agilewiki.awdb.nodes.Realm_Node;
 import org.agilewiki.awdb.nodes.User_NodeFactory;
 
 import java.util.List;
@@ -171,15 +172,17 @@ public class NodeBase implements Node {
         return getNodeData().destinationIdIterable(label1Id);
     }
 
-    public void createNode(String nodeId, String nodeTypeId, String userId, String RealmId) {
+    public void createNode(String nodeId, String nodeTypeId, String userId, String realmId) {
         if (this.nodeId != null)
             throw new IllegalStateException("already has a nodeId: " + nodeId);
         if (!(this instanceof GenerativeNode))
             throw new UnsupportedOperationException("not a generative node: " + getClass().getName());
         initialize(nodeId, FactoryRegistry.MAX_TIMESTAMP);
-        getAwDb().createSecondaryId(nodeId, Key_NodeFactory.NODETYPE_ID, nodeTypeId);
+        createSecondaryId(Key_NodeFactory.NODETYPE_ID, nodeTypeId);
         if (userId == null)
             userId = User_NodeFactory.SYSTEM_USER_ID;
-        getAwDb().createLnk1(getNodeId(), NameId.USER_KEY, userId);
+        createLnk1(NameId.USER_KEY, userId);
+        Realm_Node realm_node = (Realm_Node) getAwDb().fetchNode(realmId, FactoryRegistry.MAX_TIMESTAMP);
+        realm_node.newNode(nodeId, userId);
     }
 }
