@@ -179,10 +179,20 @@ public class NodeData {
 
     public void createLnk1(String labelId, String destinationNodeId) {
         Link1Id.createLink1(db, nodeId, labelId, destinationNodeId);
+        ConcurrentSkipListSet s = lnk1s.get(labelId);
+        if (s == null) {
+            s = new ConcurrentSkipListSet();
+            lnk1s.put(labelId, s);
+        }
+        s.add(destinationNodeId);
     }
 
     public void removeLnk1(String labelId, String destinationNodeId) {
         Link1Id.removeLink1(db, nodeId, labelId, destinationNodeId);
+        ConcurrentSkipListSet s = lnk1s.get(labelId);
+        if (s == null)
+            return;
+        s.remove(destinationNodeId);
     }
 
     public Iterable<String> label1IdIterable() {

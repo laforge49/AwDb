@@ -2,6 +2,7 @@ package org.agilewiki.awdb.nodes;
 
 import org.agilewiki.awdb.AwDb;
 import org.agilewiki.awdb.db.ids.NameId;
+import org.agilewiki.awdb.db.immutable.FactoryRegistry;
 import org.agilewiki.awdb.db.immutable.collections.MapNode;
 import org.agilewiki.awdb.db.virtualcow.Db;
 
@@ -36,7 +37,7 @@ public class Delete_Node extends JournalEntry_Node {
         while (!ids.isEmpty()) {
             id = ids.removeLast();
             awDb.clearMap(id);
-            for (String lnkTyp : awDb.originLabelIdIterable(id)) {
+            for (String lnkTyp : awDb.originLabelIdIterable(id, FactoryRegistry.MAX_TIMESTAMP)) {
                 for (String tId : awDb.destinationIdIterable(id, lnkTyp, awDb.getDbTimestamp())) {
                     awDb.removeLnk1(id, lnkTyp, tId);
                 }
@@ -46,7 +47,7 @@ public class Delete_Node extends JournalEntry_Node {
                     awDb.removeLnk1(oId, lnkTyp, id);
                 }
             }
-            for (String keyId : awDb.nodeKeyIdIterable(id)) {
+            for (String keyId : awDb.nodeKeyIdIterable(id, FactoryRegistry.MAX_TIMESTAMP)) {
                 for (String valueId : awDb.nodeValueIdIterable(id, keyId, awDb.getDbTimestamp())) {
                     awDb.removeSecondaryId(id, keyId, valueId);
                 }

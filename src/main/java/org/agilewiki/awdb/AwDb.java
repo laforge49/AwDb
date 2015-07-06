@@ -16,9 +16,7 @@ import org.agilewiki.awdb.db.immutable.collections.*;
 import org.agilewiki.awdb.db.virtualcow.Db;
 import org.agilewiki.awdb.db.virtualcow.DbFactoryRegistry;
 import org.agilewiki.awdb.db.virtualcow.Display;
-import org.agilewiki.awdb.nodes.InitializeDatabase_Node;
-import org.agilewiki.awdb.nodes.Key_NodeFactory;
-import org.agilewiki.awdb.nodes.Metadata_NodeFactory;
+import org.agilewiki.awdb.nodes.*;
 import org.agilewiki.jactor2.core.blades.BladeBase;
 import org.agilewiki.jactor2.core.blades.NonBlockingBladeBase;
 import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
@@ -214,8 +212,9 @@ public class AwDb implements AutoCloseable {
             return null;
         }
         Node node = timelessNodes.get(nodeId);
-        if (node != null)
+        if (node != null) {
             return node;
+        }
         if (Timestamp.generate() < timestamp)
             timestamp = FactoryRegistry.MAX_TIMESTAMP;
         String timestampId = Timestamp.timestampId(timestamp);
@@ -228,10 +227,15 @@ public class AwDb implements AutoCloseable {
     }
 
     public void addTimelessNode(Node node) {
-        timelessNodes.put(node.getNodeId(), node);
+        if (timelessNodes.put(node.getNodeId(), node) != null)
+            System.out.println("Overwrite of " + node.getNodeId());
     }
 
     public void addNode(Node node) {
+        if (timelessNodes.containsKey(node.getNodeId())) {
+            System.out.println("woops!");
+            return;
+        }
         long timestamp = FactoryRegistry.MAX_TIMESTAMP;
         String timestampId = Timestamp.timestampId(timestamp);
         nodeCache.put(node.getNodeId() + timestampId, node);
@@ -331,8 +335,8 @@ public class AwDb implements AutoCloseable {
             node.removeSecondaryId(keyId, valueId);
     }
 
-    public Iterable<String> nodeKeyIdIterable(String nodeId) {
-        Node node = fetchNode(nodeId, FactoryRegistry.MAX_TIMESTAMP);
+    public Iterable<String> nodeKeyIdIterable(String nodeId, long timestamp) {
+        Node node = fetchNode(nodeId, timestamp);
         if (node == null) {
             return SecondaryId.typeIdIterable(db, nodeId);
         }
@@ -431,9 +435,9 @@ public class AwDb implements AutoCloseable {
 
     public void createLnk1(String originNodeId, String labelId, String destinationNodeId) {
         Node node = fetchNode(originNodeId, FactoryRegistry.MAX_TIMESTAMP);
-        if (node == null)
+        if (node == null) {
             Link1Id.createLink1(db, originNodeId, labelId, destinationNodeId);
-        else
+        } else
             node.createLnk1(labelId, destinationNodeId);
     }
 
@@ -445,8 +449,8 @@ public class AwDb implements AutoCloseable {
             node.removeLnk1(labelId, destinationNodeId);
     }
 
-    public Iterable<String> originLabelIdIterable(String nodeId) {
-        Node node = fetchNode(nodeId, FactoryRegistry.MAX_TIMESTAMP);
+    public Iterable<String> originLabelIdIterable(String nodeId, long timestamp) {
+        Node node = fetchNode(nodeId, timestamp);
         if (node == null) {
             return Link1Id.link1LabelIdIterable(db, nodeId);
         }

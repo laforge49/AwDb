@@ -18,6 +18,8 @@ public class Lnk1_NodeFactory extends Metadata_NodeFactory {
     final public static String DESTINATION_LNK1_ID = "$ndestination.lnk1";
     final public static String USER_ID = "$nuser";
     final public static String USER_LNK1_ID = "$nuser.lnk1";
+    final public static String USER_GROUP_ID = "$nuserGroup";
+    final public static String USER_GROUP_LNK1_ID = "$nuserGroup.lnk1";
 
     public static void create(AwDb awDb) {
         awDb.addTimelessNode(new Lnk1_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));

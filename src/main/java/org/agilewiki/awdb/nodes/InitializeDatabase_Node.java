@@ -23,6 +23,29 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
 
     @Override
     public void process(Db db, MapNode tMapNode) {
+
+        Node_NodeFactory.define(Delete_NodeFactory.ID, Node_NodeFactory.ID, JournalEntry_NodeFactory.ID,
+                NameId.USER_KEY, NameId.AN_ID);
+        Node_NodeFactory.define(Metadata_NodeFactory.ID, Node_NodeFactory.ID, null);
+        Node_NodeFactory.define(Node_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
+        Node_NodeFactory.define(Key_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
+        Node_NodeFactory.define(Lnk1_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
+        Node_NodeFactory.define(Attribute_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID,
+                NameId.SUBJECT);
+        Node_NodeFactory.define(JournalEntry_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
+        Node_NodeFactory.define(User_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID,
+                NameId.SUBJECT);
+        Node_NodeFactory.define(User_NodeFactory.SYSTEM_USER_ID, User_NodeFactory.ID, null);
+        Node_NodeFactory.define(Realm_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
+        Node_NodeFactory.define(Realm_NodeFactory.SYSTEM_REALM_ID, Realm_NodeFactory.ID, null);
+        Node_NodeFactory.define(Realm_NodeFactory.USER_REALM_ID, Realm_NodeFactory.ID, null);
+        Node_NodeFactory.define(Group_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
+        Node_NodeFactory.define(Group_NodeFactory.USERS_GROUP_ID, Group_NodeFactory.ID, null);
+        Node_NodeFactory.define(Group_NodeFactory.ADMINS_GROUP_ID, Group_NodeFactory.ID, null);
+        Node_NodeFactory.define(Domain_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
+        Node_NodeFactory.define(Domain_NodeFactory.USERS_SYSTEM_DOMAIN_ID, Domain_NodeFactory.ID, null);
+        Node_NodeFactory.define(Domain_NodeFactory.ADMINS_USER_DOMAIN_ID, Domain_NodeFactory.ID, null);
+
         Key_NodeFactory.define(Key_NodeFactory.NODETYPE_KEY_ID, Node_NodeFactory.ID);
         Key_NodeFactory.define(Key_NodeFactory.SUPERTYPE_KEY_ID, Node_NodeFactory.ID);
         Key_NodeFactory.define(Key_NodeFactory.ATTRIBUTENAME_KEY_ID, Attribute_NodeFactory.ID);
@@ -34,21 +57,9 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.ORIGIN_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.DESTINATION_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_LNK1_ID, null, Metadata_NodeFactory.ID, User_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_GROUP_LNK1_ID, null, User_NodeFactory.ID, Group_NodeFactory.ID);
 
-        Node_NodeFactory.define(Delete_NodeFactory.ID, Node_NodeFactory.ID, JournalEntry_NodeFactory.ID,
-                NameId.USER_KEY, NameId.AN_ID);
-        Node_NodeFactory.define(Metadata_NodeFactory.ID, Node_NodeFactory.ID, null);
-        Node_NodeFactory.define(Node_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
-        Node_NodeFactory.define(Key_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
-        Node_NodeFactory.define(Lnk1_NodeFactory.ID, Node_NodeFactory.ID, Metadata_NodeFactory.ID);
-        Node_NodeFactory.define(Attribute_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID,
-                NameId.SUBJECT);
-        Node_NodeFactory.define(JournalEntry_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
-        Node_NodeFactory.define(Realm_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
-        Node_NodeFactory.define(User_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID,
-                NameId.SUBJECT);
-        Node_NodeFactory.define(User_NodeFactory.SYSTEM_USER_ID, User_NodeFactory.ID, null);
-        Node_NodeFactory.define(Realm_NodeFactory.SYSTEM_REALM_ID, Realm_NodeFactory.ID, null);
-        Node_NodeFactory.define(Realm_NodeFactory.USER_REALM_ID, Realm_NodeFactory.ID, null);
+        getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_GROUP_ID, Group_NodeFactory.USERS_GROUP_ID);
+        getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_GROUP_ID, Group_NodeFactory.ADMINS_GROUP_ID);
     }
 }
