@@ -1,5 +1,7 @@
 package org.agilewiki.awdb;
 
+import org.agilewiki.awdb.nodes.Realm_NodeFactory;
+
 import java.util.List;
 import java.util.NavigableMap;
 
@@ -11,6 +13,10 @@ public interface Node {
     String getNodeId();
 
     NodeData getNodeData();
+
+    default String getRealmId() {
+        return Realm_NodeFactory.SYSTEM_REALM_ID;
+    }
 
     long getTimestamp();
 

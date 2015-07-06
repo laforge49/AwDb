@@ -172,7 +172,7 @@ public class NodeBase implements Node {
         return getNodeData().destinationIdIterable(label1Id);
     }
 
-    public void createNode(String nodeId, String nodeTypeId, String userId, String realmId) {
+    public void createNode(String nodeId, String nodeTypeId, String userId) {
         if (this.nodeId != null)
             throw new IllegalStateException("already has a nodeId: " + nodeId);
         if (!(this instanceof GenerativeNode))
@@ -182,7 +182,7 @@ public class NodeBase implements Node {
         if (userId == null)
             userId = User_NodeFactory.SYSTEM_USER_ID;
         createLnk1(NameId.USER_KEY, userId);
-        Realm_Node realm_node = (Realm_Node) getAwDb().fetchNode(realmId, FactoryRegistry.MAX_TIMESTAMP);
+        Realm_Node realm_node = (Realm_Node) getAwDb().fetchNode(getRealmId(), FactoryRegistry.MAX_TIMESTAMP);
         realm_node.newNode(nodeId, userId);
     }
 }

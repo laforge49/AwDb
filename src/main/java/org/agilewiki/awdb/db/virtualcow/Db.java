@@ -15,7 +15,6 @@ import org.agilewiki.jactor2.core.blades.IsolationBladeBase;
 import org.agilewiki.jactor2.core.messages.AsyncResponseProcessor;
 import org.agilewiki.jactor2.core.messages.impl.AsyncRequestImpl;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -25,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -93,6 +91,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     public Path getJournalDirectoryPath() {
         return journalDirectoryPath;
     }
+
     public boolean isNewDatabase() {
         return newDatabase;
     }
