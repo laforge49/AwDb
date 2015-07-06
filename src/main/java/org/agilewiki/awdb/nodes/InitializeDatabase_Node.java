@@ -58,8 +58,12 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.DESTINATION_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_LNK1_ID, null, Metadata_NodeFactory.ID, User_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_GROUP_LNK1_ID, null, User_NodeFactory.ID, Group_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.MEMBER_OF_LNK1_ID, null, User_NodeFactory.ID, Group_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_DOMAIN_LNK1_ID, null, User_NodeFactory.ID, Domain_NodeFactory.ID);
 
         getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_GROUP_ID, Group_NodeFactory.USERS_GROUP_ID);
         getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_GROUP_ID, Group_NodeFactory.ADMINS_GROUP_ID);
+        getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_DOMAIN_ID, Domain_NodeFactory.USERS_SYSTEM_DOMAIN_ID);
+        getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_DOMAIN_ID, Domain_NodeFactory.ADMINS_USER_DOMAIN_ID);
     }
 }
