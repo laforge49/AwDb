@@ -24,6 +24,16 @@ public class Lnk1_NodeFactory extends Metadata_NodeFactory {
     final public static String USER_DOMAIN_LNK1_ID = "$nuserDomain.lnk1";
     final public static String MEMBER_OF_ID = "$nmemberOf";
     final public static String MEMBER_OF_LNK1_ID = "$nmemberOf.lnk1";
+    final public static String ROLE_OF_REALM_ID = "$nroleOfRealm";
+    final public static String ROLE_OF_REALM_LNK1_ID = "$nroleOfRealm.lnk1";
+    final public static String GROUP_DOMAIN_ID = "$ngroupDomain";
+    final public static String GROUP_DOMAIN_LNK1_ID = "$ngroupDomain.lnk1";
+    final public static String DOMAIN_FOR_REALM_ID = "$ndomainForRealm";
+    final public static String DOMAIN_FOR_REALM_LNK1_ID = "$ndomainForRealm.lnk1";
+    final public static String DOMAIN_FOR_ROLE_ID = "$ndomainForRole";
+    final public static String DOMAIN_FOR_ROLE_LNK1_ID = "$ndomainForRole.lnk1";
+    final public static String OF_DOMAIN_ID = "$nofDomain";
+    final public static String OF_DOMAIN_LNK1_ID = "$nofDomain.lnk1";
 
     public static void create(AwDb awDb) {
         awDb.addTimelessNode(new Lnk1_NodeFactory(ID, FactoryRegistry.MAX_TIMESTAMP));

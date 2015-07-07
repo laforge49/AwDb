@@ -43,8 +43,6 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
         Node_NodeFactory.define(Group_NodeFactory.USERS_GROUP_ID, Group_NodeFactory.ID, null);
         Node_NodeFactory.define(Group_NodeFactory.ADMINS_GROUP_ID, Group_NodeFactory.ID, null);
         Node_NodeFactory.define(Domain_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
-        Node_NodeFactory.define(Domain_NodeFactory.USERS_SYSTEM_DOMAIN_ID, Domain_NodeFactory.ID, null);
-        Node_NodeFactory.define(Domain_NodeFactory.ADMINS_USER_DOMAIN_ID, Domain_NodeFactory.ID, null);
         Node_NodeFactory.define(Role_NodeFactory.ID, Node_NodeFactory.ID, Node_NodeFactory.ID);
 
         Key_NodeFactory.define(Key_NodeFactory.NODETYPE_KEY_ID, Node_NodeFactory.ID);
@@ -53,7 +51,7 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
         Key_NodeFactory.define(Key_NodeFactory.INVDEPENDENCY_KEY_ID, Lnk1_NodeFactory.ID);
         Key_NodeFactory.define(Key_NodeFactory.SUBJECT_KEY_ID, Node_NodeFactory.ID);
 
-        Lnk1_NodeFactory.define(Lnk1_NodeFactory.TARGET_LNK1_ID, null, Node_NodeFactory.ID, Node_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.TARGET_LNK1_ID, null, Key_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.ATTRIBUTEOF_LNK1_ID, Lnk1_NodeFactory.ATTRIBUTEOF_ID, Attribute_NodeFactory.ID, Metadata_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.ORIGIN_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.DESTINATION_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
@@ -61,10 +59,13 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_GROUP_LNK1_ID, null, User_NodeFactory.ID, Group_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.MEMBER_OF_LNK1_ID, null, User_NodeFactory.ID, Group_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_DOMAIN_LNK1_ID, null, User_NodeFactory.ID, Domain_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.ROLE_OF_REALM_LNK1_ID, null, Role_NodeFactory.ID, Realm_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.GROUP_DOMAIN_LNK1_ID, null, Group_NodeFactory.ID, Domain_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.DOMAIN_FOR_REALM_LNK1_ID, null, Domain_NodeFactory.ID, Realm_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.DOMAIN_FOR_ROLE_LNK1_ID, null, Domain_NodeFactory.ID, Role_NodeFactory.ID);
+        Lnk1_NodeFactory.define(Lnk1_NodeFactory.OF_DOMAIN_LNK1_ID, null, Node_NodeFactory.ID, Domain_NodeFactory.ID);
 
         getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_GROUP_ID, Group_NodeFactory.USERS_GROUP_ID);
         getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_GROUP_ID, Group_NodeFactory.ADMINS_GROUP_ID);
-        getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_DOMAIN_ID, Domain_NodeFactory.USERS_SYSTEM_DOMAIN_ID);
-        getAwDb().createLnk1(User_NodeFactory.SYSTEM_USER_ID, Lnk1_NodeFactory.USER_DOMAIN_ID, Domain_NodeFactory.ADMINS_USER_DOMAIN_ID);
     }
 }
