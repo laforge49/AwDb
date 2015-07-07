@@ -13,6 +13,7 @@ public class Node_NodeFactory extends Metadata_NodeFactory {
         Realm_NodeFactory.create(awDb);
         Group_NodeFactory.create(awDb);
         Domain_NodeFactory.create(awDb);
+        Role_NodeFactory.create(awDb);
         JournalEntry_NodeFactory.create(awDb);
         Attribute_NodeFactory.create(awDb);
         User_NodeFactory.create(awDb);
