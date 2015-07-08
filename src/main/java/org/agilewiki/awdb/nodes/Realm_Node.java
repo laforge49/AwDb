@@ -1,5 +1,6 @@
 package org.agilewiki.awdb.nodes;
 
+import org.agilewiki.awdb.Node;
 import org.agilewiki.awdb.NodeBase;
 
 public class Realm_Node extends NodeBase {
@@ -8,6 +9,6 @@ public class Realm_Node extends NodeBase {
         super(nodeId, timestamp);
     }
 
-    public void newNode(String nodeId, String userId) {
+    public void newNode(Node node, String userId) {
     }
 }

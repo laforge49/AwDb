@@ -20,8 +20,8 @@ public class JournalEntry_Node extends NodeBase implements Transaction, Generati
     @Override
     public final void transform(Db db, MapNode tMapNode) {
         transformInit(db, tMapNode);
-        process(db, tMapNode);
         getAwDb().addNode(this);
+        process(db, tMapNode);
     }
 
     public void transformInit(Db db, MapNode tMapNode) {

@@ -183,6 +183,6 @@ public class NodeBase implements Node {
             userId = User_NodeFactory.SYSTEM_USER_ID;
         createLnk1(NameId.USER_KEY, userId);
         Realm_Node realm_node = (Realm_Node) getAwDb().fetchNode(getRealmId(), FactoryRegistry.MAX_TIMESTAMP);
-        realm_node.newNode(nodeId, userId);
+        realm_node.newNode(this, userId);
     }
 }
