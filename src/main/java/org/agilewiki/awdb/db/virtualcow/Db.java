@@ -3,6 +3,7 @@ package org.agilewiki.awdb.db.virtualcow;
 import org.agilewiki.awdb.db.BlockIOException;
 import org.agilewiki.awdb.db.dsm.DiskSpaceManager;
 import org.agilewiki.awdb.db.ids.NameId;
+import org.agilewiki.awdb.db.ids.RandomId;
 import org.agilewiki.awdb.db.ids.Timestamp;
 import org.agilewiki.awdb.db.ids.ValueId;
 import org.agilewiki.awdb.db.ids.composites.Journal;
@@ -22,6 +23,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,6 +54,7 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
     private Path journalFilePath = null;
     private FileChannel jc;
     private boolean newDatabase = false;
+    private SecureRandom transactionalRandom = null;
 
     /**
      * Create a Db actor.
@@ -522,6 +525,14 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
                 try {
                     ImmutableFactory f = dbFactoryRegistry.readId(tByteBuffer);
                     MapNode tMapNode = (MapNode) f.deserialize(tByteBuffer);
+                    ListNode ln = tMapNode.getList(NameId.RANDOM_SEED);
+                    String randomSeed = null;
+                    if (ln != null)
+                        randomSeed = (String) ln.get(0);
+                    if (randomSeed != null)
+                        transactionalRandom = RandomId.newSecureRandom(randomSeed);
+                    else
+                        transactionalRandom = null;
                     String transactionName = (String) tMapNode.getList(NameId.TRANSACTION_NAME).get(0);
                     Class tClass = transactionRegistry.get(transactionName);
                     Transaction transaction = (Transaction) tClass.newInstance();
@@ -581,6 +592,11 @@ public class Db extends IsolationBladeBase implements AutoCloseable {
      */
     public boolean isPrivileged() {
         return Thread.currentThread() == privilegedThread;
+    }
+
+    public SecureRandom transactionalRandom() {
+        checkPrivilege();
+        return transactionalRandom;
     }
 
     protected void _update() {

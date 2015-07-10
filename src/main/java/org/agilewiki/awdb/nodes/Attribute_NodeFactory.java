@@ -14,7 +14,7 @@ public class Attribute_NodeFactory extends Node_Node {
 
     public static void define(String attributeNameId, String nodeId) {
         AwDb awDb = getAwDb();
-        String attributeId = AwDb.randomId.generate();
+        String attributeId = AwDb.randomId.generate(awDb.transactionalRandom());
         awDb.set(attributeId, NameId.SUBJECT, attributeNameId + " - " + nodeId);
         awDb.createSecondaryId(attributeId, Key_NodeFactory.NODETYPE_ID, ID);
         awDb.createSecondaryId(attributeId, Key_NodeFactory.ATTRIBUTENAME_ID, attributeNameId);

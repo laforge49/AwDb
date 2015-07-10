@@ -18,6 +18,7 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
     public static String update(AwDb awDb)
             throws Exception {
         MapNode mn = awDb.nilMap;
+        mn = mn.set(NameId.RANDOM_SEED, awDb.randomId.generateSeed());
         return awDb.update(NAME, mn).call();
     }
 
@@ -56,6 +57,7 @@ public class InitializeDatabase_Node extends JournalEntry_Node {
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.ORIGIN_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.DESTINATION_LNK1_ID, null, Lnk1_NodeFactory.ID, Node_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_LNK1_ID, null, Metadata_NodeFactory.ID, User_NodeFactory.ID);
+
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_GROUP_LNK1_ID, null, User_NodeFactory.ID, Group_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.MEMBER_OF_LNK1_ID, null, User_NodeFactory.ID, Group_NodeFactory.ID);
         Lnk1_NodeFactory.define(Lnk1_NodeFactory.USER_DOMAIN_LNK1_ID, null, User_NodeFactory.ID, Domain_NodeFactory.ID);

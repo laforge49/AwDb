@@ -30,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.util.*;
 
 import static java.nio.file.StandardOpenOption.READ;
@@ -98,6 +99,10 @@ public class AwDb implements AutoCloseable {
         });
         nodeCache = cache;
         Metadata_NodeFactory.create(awDb);
+    }
+
+    public SecureRandom transactionalRandom() {
+        return db.transactionalRandom();
     }
 
     public void close() {
@@ -215,7 +220,8 @@ public class AwDb implements AutoCloseable {
         if (node != null) {
             return node;
         }
-        if (Timestamp.generate() < timestamp)
+        long gts = Timestamp.generate();
+        if (gts < timestamp)
             timestamp = FactoryRegistry.MAX_TIMESTAMP;
         String timestampId = Timestamp.timestampId(timestamp);
         node = nodeCache.getUnchecked(nodeId + timestampId);

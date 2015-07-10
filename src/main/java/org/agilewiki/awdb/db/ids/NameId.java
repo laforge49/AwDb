@@ -10,6 +10,7 @@ public class NameId {
      */
     public static final String PREFIX = "$n";
 
+    public static final String RANDOM_SEED = generate("randomSeed");
     public static final String USER_KEY = generate("user");
     public final static String TRANSACTION_NAME = "$ntransactionName";
     public final static String SUBJECT = generate("subject");
